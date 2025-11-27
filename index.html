@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>月老條件分析 AI - 根據你的狀態生成適合你的月老條件許願單</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;400;700&family=Inter:wght@200;400;600;800&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            colors: {
+              space: {
+                50: '#f8fafc',
+                100: '#f1f5f9',
+                200: '#e2e8f0',
+                300: '#cbd5e1',
+                400: '#94a3b8',
+                500: '#64748b',
+                600: '#475569',
+                700: '#334155',
+                800: '#1e293b',
+                900: '#0f172a',
+                950: '#020617',
+              },
+              lab: {
+                50: '#fafafa',   // Ultra light gray
+                100: '#f4f4f5',  // Zinc 100
+                200: '#e4e4e7',  // Zinc 200
+                300: '#d4d4d8',  // Zinc 300
+                900: '#18181b',  // Zinc 900
+              }
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.8s ease-out',
+              'scan': 'scan 2s linear infinite',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              scan: {
+                '0%': { transform: 'translateY(-100%)' },
+                '100%': { transform: 'translateY(100%)' },
+              }
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      body {
+        background-color: #fafafa;
+        color: #18181b;
+      }
+      /* Custom Scrollbar for Lab feel */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f4f4f5; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #d4d4d8; 
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #a1a1aa; 
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "html2canvas": "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/package/xlsx.mjs"
+  }
+}
+</script>
+</head>
+  <body class="antialiased selection:bg-cyan-200 selection:text-cyan-900">
+    <div id="root"></div>
+  </body>
+</html>
