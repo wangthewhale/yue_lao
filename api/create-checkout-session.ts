@@ -6,9 +6,8 @@ const stripeSecretKey = process.env.STRIPE_SECRET_KEY as string;
 const priceId = process.env.STRIPE_PRICE_ID as string;
 const frontendUrl = process.env.FRONTEND_URL as string;
 
-const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: '2024-06-20',
-});
+// 不指定 apiVersion → 使用 Stripe 預設版本（最安全）
+const stripe = new Stripe(stripeSecretKey);
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
