@@ -1,7 +1,25 @@
 
 import React, { useState, useEffect } from 'react';
 import { UserData, RelationshipType, AnalysisResult } from './types';
-import { analyzeIdealMatch, generateMatchImage } from './services/geminiService';
+const analyzeIdealMatch = async (data, type) => {
+  const res = await fetch('/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userData: data, relationshipType: type })
+  });
+  return res.json();
+};
+
+const generateMatchImage = async (prompt) => {
+  const res = await fetch('/api/generate-image', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt })
+  });
+  const json = await res.json();
+  return json.image;
+};
+
 import { saveSubmission } from './services/storageService'; // Import storage
 import { InputForm } from './components/InputForm';
 import { ResultCard } from './components/ResultCard';
