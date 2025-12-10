@@ -5,13 +5,12 @@ import Stripe from 'stripe';
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY as string;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET as string;
 
-const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: '2024-06-20',
-});
+// 不手動指定 apiVersion，讓 Stripe 自動管理版本
+const stripe = new Stripe(stripeSecretKey);
 
 export const config = {
   api: {
-    bodyParser: false,
+    bodyParser: false, // Webhook 必須關閉 bodyParser
   },
 };
 
@@ -37,7 +36,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // 之後可以改成紀錄用戶付款成功狀態
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
     console.log('Payment success:', session.id);
