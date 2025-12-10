@@ -5,6 +5,13 @@ import * as XLSX from 'xlsx';
 
 const STORAGE_KEY = 'YUE_LAO_SUBMISSIONS_DB';
 
+// ⚠️ IMPORTANT: Replace this URL with your own Google Apps Script Web App URL
+// Deploy Instructions:
+// 1. Create Google Sheet -> Extensions -> Apps Script
+// 2. Paste the doPost code
+// 3. Deploy -> New Deployment -> Web App -> Access: "Anyone"
+const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE"; 
+
 interface SubmissionRecord extends UserData {
   id: string;
   timestamp: string;
@@ -12,7 +19,8 @@ interface SubmissionRecord extends UserData {
   analysisResult?: AnalysisResult;
 }
 
-export const saveSubmission = (userData: UserData, type: RelationshipType, result?: AnalysisResult) => {
+export const saveSubmission = async (userData: UserData, type: RelationshipType, result?: AnalysisResult) => {
+  // 1. Save to Local Storage (Backup & Admin Panel)
   try {
     const existingDataStr = localStorage.getItem(STORAGE_KEY);
     const submissions: SubmissionRecord[] = existingDataStr ? JSON.parse(existingDataStr) : [];
@@ -28,19 +36,35 @@ export const saveSubmission = (userData: UserData, type: RelationshipType, resul
     submissions.push(newSubmission);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions));
     console.log('Submission saved to local DB', newSubmission.id);
-  } catch (error) {
-    console.error('Failed to save submission. LocalStorage might be full.', error);
-    // Fallback: If quota exceeded (due to images), try saving without photo
-    if (userData.photo) {
-        try {
-            const cleanData = { ...userData, photo: 'IMAGE_TOO_LARGE_NOT_SAVED' };
-            saveSubmission(cleanData, type, result);
-        } catch (e) {
-            console.error('Even text save failed', e);
-        }
+
+    // 2. Send to Google Sheets
+    if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.includes("script.google.com")) {
+        sendToGoogleSheets(newSubmission);
     }
+
+  } catch (error) {
+    console.error('Failed to save submission.', error);
   }
 };
+
+const sendToGoogleSheets = async (data: SubmissionRecord) => {
+    try {
+        // Remove photo data before sending to Sheets (too large)
+        const { photo, ...cleanData } = data;
+        
+        await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Important for Google Apps Script
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(cleanData)
+        });
+        console.log("Sent to Google Sheets");
+    } catch (e) {
+        console.error("Google Sheets Sync Error", e);
+    }
+}
 
 export const getSubmissions = (): SubmissionRecord[] => {
     try {
@@ -80,7 +104,6 @@ export const exportToExcel = () => {
         DarkSide: record.darkSide,
         Archetype: record.analysisResult?.archetypeTitle || 'N/A',
         Score: record.analysisResult?.compatibilityScore || 'N/A',
-        // Photo: record.photo ? "Base64 Image Present" : "No Image" // Keeping excel clean
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(rows);
